@@ -30,7 +30,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::949100095236:role/GitHub_IAM_role
+          role-to-assume: arn:aws:iam::949100095136:role/GitHub_IAM_role
           aws-region: us-east-1
 
       - run: terraform init
@@ -51,7 +51,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::949100095236:role/GitHub_IAM_role
+          role-to-assume: arn:aws:iam::949100095136:role/GitHub_IAM_role
           aws-region: us-east-1
 
       - run: terraform init
