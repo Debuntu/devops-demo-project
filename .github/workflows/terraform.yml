@@ -50,6 +50,6 @@ jobs:
       - name: Confirm Destroy
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: |
-        echo "Destroying infrastructure..."
+          echo "Destroying infrastructure..."
 
         
