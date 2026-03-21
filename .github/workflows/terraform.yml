@@ -9,10 +9,9 @@ on:
       action:
         description: "Choose action"
         required: true
-        default: "apply"
+        default: "destroy"
         type: choice
         options:
-          - apply
           - destroy
 
 permissions:
@@ -22,58 +21,83 @@ permissions:
 jobs:
 
   terraform-plan:
+    name: Terraform Plan
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::949100095136:role/GitHub_IAM_role
           aws-region: us-east-1
 
-      - run: terraform init
-      - run: terraform plan
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
 
   terraform-apply:
+    name: Terraform Apply
     needs: terraform-plan
     runs-on: ubuntu-latest
 
+    # 🔥 THIS CREATES MANUAL APPROVAL
     environment:
-      name: prod   # 🔥 THIS ENABLES MANUAL APPROVAL
-
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply' }}
+      name: prod
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::949100095136:role/GitHub_IAM_role
           aws-region: us-east-1
 
-      - run: terraform init
-      - run: terraform apply -auto-approve
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
 
   terraform-destroy:
+    name: Terraform Destroy
     needs: terraform-plan
     runs-on: ubuntu-latest
 
+    # 🔥 SAME APPROVAL GATE
     environment:
-      name: prod   # 🔥 SAME APPROVAL GATE
+      name: prod
 
+    # ❌ Only runs manually
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy' }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::949100095136:role/GitHub_IAM_role
           aws-region: us-east-1
 
-      - run: terraform init
-      - run: terraform destroy -auto-approve
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
