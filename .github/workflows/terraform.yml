@@ -1,13 +1,19 @@
-name: Terraform CI/CD
+name: Terraform Manual Pipeline
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Choose Terraform action"
+        required: true
+        default: "plan"
+        type: choice
+        options:
+          - apply
+          - destroy
 
 permissions:
-  id-token: write   # 🔥 REQUIRED FOR OIDC
+  id-token: write
   contents: read
 
 jobs:
@@ -15,24 +21,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::949100095136:role/GitHub_IAM_role
           aws-region: us-east-1
 
       - name: Terraform Init
-        run: terraform init -upgrade
+        run: terraform init
 
       - name: Terraform Plan
         run: terraform plan
 
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.action == 'apply' }}
+        run: terraform apply -auto-approve
+
       - name: Terraform Destroy
-        if: github.ref == 'refs/heads/main'
+        if: ${{ github.event.inputs.action == 'destroy' }}
         run: terraform destroy -auto-approve
+
+      - name: Confirm Destroy
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: |
+        echo "Destroying infrastructure..."
+
+        

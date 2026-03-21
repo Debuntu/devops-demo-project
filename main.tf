@@ -46,7 +46,7 @@ module "eks" {
 
   fargate_profiles = {
     coredns-fargate-profile = {
-      name = "fg-profile"
+      name                            = "fg-profile"
       fargate_pod_execution_role_name = "AmazonEKSFargatePodExecutionRole"
       selectors = [
         {
@@ -93,25 +93,25 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policies" {
 
 
 resource "aws_eks_addon" "coredns" {
-  cluster_name = module.eks.cluster_name
-  addon_name   = "coredns"
+  cluster_name                = module.eks.cluster_name
+  addon_name                  = "coredns"
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
-  addon_version = "v1.10.1-eksbuild.13" 
+  #addon_version = "v1.10.1-eksbuild.13" 
 }
 
 resource "aws_eks_addon" "kube_proxy" {
-  cluster_name = module.eks.cluster_name
-  addon_name   = "kube-proxy"
+  cluster_name                = module.eks.cluster_name
+  addon_name                  = "kube-proxy"
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
-  addon_version = "v1.29.10-eksbuild.3"
+  #addon_version = "v1.29.10-eksbuild.3"
 }
 
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name = module.eks.cluster_name
-  addon_name   = "vpc-cni"
+  cluster_name                = module.eks.cluster_name
+  addon_name                  = "vpc-cni"
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
-  addon_version = "v1.19.0-eksbuild.1"
+  #addon_version = "v1.19.0-eksbuild.1"
 }
